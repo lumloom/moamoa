@@ -225,6 +225,8 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .cover-preview { margin-top: 12px; display: flex; align-items: center; gap: 12px; }
 .cover-preview img { width: 70px; height: 70px; border-radius: 14px; object-fit: cover; }
 .cover-preview button { border: 0; background: none; color: #a23b3b; text-decoration: underline; cursor: pointer; }
+.book-delete-button { width: 100%; min-height: 46px; margin-top: 14px; border: 1px solid #e5caca; border-radius: 14px; background: #fff8f6; color: #9b3d3d; cursor: pointer; font-weight: 900; }
+.book-delete-button:hover { border-color: #c98e8e; background: #fff0ed; }
 .card-detail { width: min(680px, 100%); padding: 14px; background: transparent; box-shadow: none; overflow: visible; }
 .detail-card { padding: 18px; border: 9px solid var(--book-color); border-radius: 26px; background: linear-gradient(145deg, #fffef9, #fff3d6); box-shadow: 0 24px 70px rgba(0,0,0,.4); }
 .detail-card::before { opacity: .5; }

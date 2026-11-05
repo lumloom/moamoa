@@ -48,6 +48,28 @@ export async function remove(name, key) {
   return requestPromise((await store(name, 'readwrite')).delete(key))
 }
 
+export async function removeBook(bookId) {
+  const db = await openDb()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['books', 'cards', 'drafts'], 'readwrite')
+    transaction.objectStore('books').delete(bookId)
+    transaction.objectStore('drafts').delete(`draft-${bookId}`)
+
+    const cardIndex = transaction.objectStore('cards').index('bookId')
+    const cursorRequest = cardIndex.openKeyCursor(IDBKeyRange.only(bookId))
+    cursorRequest.onsuccess = () => {
+      const cursor = cursorRequest.result
+      if (!cursor) return
+      transaction.objectStore('cards').delete(cursor.primaryKey)
+      cursor.continue()
+    }
+
+    transaction.oncomplete = resolve
+    transaction.onerror = () => reject(transaction.error)
+    transaction.onabort = () => reject(transaction.error)
+  })
+}
+
 export async function get(name, key) {
   return requestPromise((await store(name)).get(key))
 }

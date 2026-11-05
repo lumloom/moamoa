@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import JSZip from 'jszip'
 import DrawingPad from './components/DrawingPad.jsx'
 import { downloadCanvas, renderCard } from './card-renderer.js'
-import { get, getAll, migrateLegacyIfNeeded, put, remove, replaceLibrary } from './db.js'
+import { get, getAll, migrateLegacyIfNeeded, put, remove, removeBook, replaceLibrary } from './db.js'
 import {
   BOOK_COLORS,
   BOOK_EMOJIS,
@@ -166,6 +166,33 @@ function App() {
     },
   })
 
+  const deleteBook = (book) => {
+    const bookCards = cards.filter((card) => card.bookId === book.id)
+    setShowBookForm(false)
+    setEditingBook(null)
+    setConfirmAction({
+      title: `『${book.name}』 도감을 지울까요?`,
+      message: bookCards.length
+        ? `이 도감과 안에 있는 카드 ${bookCards.length}장이 모두 사라져요. 지운 뒤에는 되돌릴 수 없어요.`
+        : '이 도감이 책장에서 사라져요. 지운 뒤에는 되돌릴 수 없어요.',
+      confirmLabel: '도감 지우기',
+      run: async () => {
+        try {
+          await removeBook(book.id)
+          await refresh()
+          setSelectedCard(null)
+          setCelebration(null)
+          setView({ name: 'shelf' })
+          setConfirmAction(null)
+          setNotice(`『${book.name}』 도감을 책장에서 지웠어요.`)
+        } catch {
+          setConfirmAction(null)
+          setNotice('도감을 지우지 못했어요. 저장 공간을 확인해 주세요.')
+        }
+      },
+    })
+  }
+
   const exportBackup = () => {
     const blob = new Blob([JSON.stringify(makeBackup(books, cards), null, 2)], { type: 'application/json' })
     const link = document.createElement('a')
@@ -269,7 +296,7 @@ function App() {
         />
       )}
 
-      {showBookForm && <BookForm initialBook={editingBook} onClose={() => { setShowBookForm(false); setEditingBook(null) }} onSave={saveBook} />}
+      {showBookForm && <BookForm initialBook={editingBook} onClose={() => { setShowBookForm(false); setEditingBook(null) }} onSave={saveBook} onDelete={deleteBook} />}
       {showDataTools && <DataTools onClose={() => setShowDataTools(false)} onExport={exportBackup} onImport={importBackup} />}
       {selectedCard && (
         <CardDetail
@@ -435,7 +462,7 @@ function CardTile({ card, book, onClick }) {
   )
 }
 
-function BookForm({ initialBook, onClose, onSave }) {
+function BookForm({ initialBook, onClose, onSave, onDelete }) {
   const [name, setName] = useState(initialBook?.name || '')
   const [color, setColor] = useState(initialBook?.color || BOOK_COLORS[0].value)
   const [emoji, setEmoji] = useState(initialBook?.emoji || BOOK_EMOJIS[0])
@@ -483,6 +510,7 @@ function BookForm({ initialBook, onClose, onSave }) {
         {coverImage && <div className="cover-preview"><img src={coverImage} alt="선택한 표지" /><button onClick={() => setCoverImage('')}>사진 빼기</button></div>}
         {error && <p className="form-error">{error}</p>}
         <button className="primary-button full-button" onClick={submit}>{initialBook ? '도감 바꾸기' : '내 책장에 꽂기'}</button>
+        {initialBook && <button className="book-delete-button" onClick={() => onDelete(initialBook)}>이 도감 삭제하기</button>}
       </section>
     </div>
   )
