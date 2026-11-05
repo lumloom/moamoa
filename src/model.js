@@ -1,10 +1,10 @@
 export const BOOK_COLORS = [
-  { name: '민트', value: '#70c6a8' },
-  { name: '하늘', value: '#6eb5e9' },
-  { name: '노랑', value: '#efbd4f' },
-  { name: '주황', value: '#ed8d5a' },
-  { name: '분홍', value: '#e98caa' },
-  { name: '보라', value: '#9d89d8' },
+  { name: '민트', value: '#88a891' },
+  { name: '하늘', value: '#8db5cc' },
+  { name: '노랑', value: '#d8b86c' },
+  { name: '주황', value: '#d99a7d' },
+  { name: '분홍', value: '#d79cab' },
+  { name: '보라', value: '#a99cc7' },
 ]
 
 export const BOOK_EMOJIS = ['🦖', '⚽', '🚀', '🐞', '🧱', '🍳', '🐋', '🎨', '🔭', '💡']

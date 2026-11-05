@@ -218,7 +218,7 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <button className="brand-button" onClick={goShelf} aria-label="내 책장으로 가기">
-          <span className="brand-mark">✦</span>
+          <span className="brand-mark">모</span>
           <span><strong>모아모아</strong><small>좋아하는 것을 발견하는 책장</small></span>
         </button>
         <div className="top-actions"><button className="header-button" onClick={() => setShowDataTools(true)}><Icon>⚙</Icon> 데이터 보관</button></div>
@@ -276,7 +276,7 @@ function Shelf({ books, cards, onOpen, onCreate }) {
     <main className="page shelf-page">
       <section className="hero">
         <div>
-          <p className="eyebrow">오늘은 무엇을 발견했나요?</p>
+          <p className="eyebrow">오늘의 작은 발견</p>
           <h1>좋아하는 것들이<br /><em>한 권의 책</em>이 돼요.</h1>
           <p>그림을 그리고, 사진을 찍고, 알아낸 것을 카드로 모아 보세요.</p>
         </div>
@@ -284,7 +284,7 @@ function Shelf({ books, cards, onOpen, onCreate }) {
       </section>
       <section className="shelf-section">
         <div className="section-heading">
-          <div><p className="eyebrow">MY BOOKSHELF</p><h2>내 책장</h2></div>
+          <div><p className="eyebrow">차곡차곡 모은 도감</p><h2>내 책장</h2></div>
           <span>{books.length}권 · {cards.length}장의 발견</span>
         </div>
         {books.length ? (
@@ -309,7 +309,7 @@ function Shelf({ books, cards, onOpen, onCreate }) {
           </div>
         ) : (
           <div className="empty-shelf">
-            <div className="empty-illustration"><span>📕</span><span>📗</span><span>📘</span></div>
+            <div className="empty-illustration" aria-hidden="true"><span /><span /><span /></div>
             <h3>아직 비어 있는 나만의 책장</h3>
             <p>지금 가장 좋아하는 것의 이름으로 첫 도감을 만들어 보세요.</p>
             <button className="primary-button" onClick={onCreate}>첫 도감 만들기</button>
@@ -364,9 +364,9 @@ function CardTile({ card, book, onClick }) {
   const pattern = getBookPattern(book)
   return (
     <button className={`card-tile patterned-card pattern-${pattern}`} onClick={onClick} style={{ '--book-color': book.color }}>
-      <div className="card-energy"><span>{book.emoji}</span><b>발견 카드</b><i>{BOOK_PATTERNS.find((item) => item.id === pattern)?.icon}</i></div>
+      <div className="card-energy"><span>{book.emoji}</span><b>발견 기록</b><i>{BOOK_PATTERNS.find((item) => item.id === pattern)?.icon}</i></div>
       <div className="tile-art"><img src={card.artwork} alt={`${card.name} 그림`} /><span>No. {String(card.serial).padStart(3, '0')}</span></div>
-      <div className="tile-copy"><strong>{card.name}</strong><p><small>발견 스킬</small>{card.fact1}</p></div>
+      <div className="tile-copy"><strong>{card.name}</strong><p><small>한 줄 발견</small>{card.fact1}</p></div>
       <div className="tile-stamps">{card.stamps?.slice(0, 3).map((stamp) => <span key={stamp} title={STAMP_META[stamp]?.label}>{STAMP_META[stamp]?.icon}</span>)}</div>
     </button>
   )
@@ -410,7 +410,7 @@ function BookForm({ initialBook, onClose, onSave }) {
     <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section className="modal book-form" role="dialog" aria-modal="true" aria-labelledby="new-book-title">
         <button className="modal-close" onClick={onClose} aria-label="닫기">×</button>
-        <p className="eyebrow">{initialBook ? 'EDIT DISCOVERY BOOK' : 'NEW DISCOVERY BOOK'}</p>
+        <p className="eyebrow">{initialBook ? '도감 다듬기' : '새 도감 만들기'}</p>
         <h2 id="new-book-title">{initialBook ? '도감 이름과 꾸밈 바꾸기' : '어떤 도감을 만들까요?'}</h2>
         <label className="field-label">도감 이름<input autoFocus value={name} maxLength="24" placeholder="예: 공룡 도감" onChange={(event) => { setName(event.target.value); setError('') }} /></label>
         <fieldset><legend>표지 색</legend><div className="choice-row">{BOOK_COLORS.map((item) => <button type="button" key={item.value} className={`cover-color ${color === item.value ? 'selected' : ''}`} style={{ background: item.value }} onClick={() => setColor(item.value)} aria-label={item.name} />)}</div></fieldset>
@@ -430,7 +430,7 @@ function DataTools({ onClose, onExport, onImport }) {
     <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section className="modal data-tools" role="dialog" aria-modal="true" aria-label="데이터 보관">
         <button className="modal-close" onClick={onClose} aria-label="닫기">×</button>
-        <p className="eyebrow">SAFE KEEPING</p>
+        <p className="eyebrow">데이터 보관</p>
         <h2>책장 데이터 보관</h2>
         <p>카드 그림은 각 도감의 <b>카드 전체 받기</b>에서 받을 수 있어요. 아래 기능은 기기를 바꿀 때 책장 전체를 옮기기 위한 보조 기능이에요.</p>
         <button className="soft-button full-button" onClick={() => { onExport(); onClose() }}>↓ 책장 데이터 백업</button>
@@ -506,7 +506,7 @@ function CardEditor({ book, cards, editCard, onCancel, onComplete }) {
     <main className="page editor-page" style={{ '--book-color': book.color }}>
       <div className="editor-heading">
         <button className="back-button" onClick={onCancel}>← {book.name}</button>
-        <div><p className="eyebrow">{editCard ? 'CARD EDITOR' : 'NEW DISCOVERY'}</p><h1>{editCard ? '카드 고치기' : '새 카드 발견하기'}</h1></div>
+        <div><p className="eyebrow">{editCard ? '카드 다듬기' : '새로운 발견'}</p><h1>{editCard ? '카드 고치기' : '새 카드 발견하기'}</h1></div>
         <span className="autosave">● 자동 저장 중</span>
       </div>
       <div className="stepper" aria-label="카드 만들기 단계">
@@ -546,8 +546,8 @@ function StampStep({ draft, book, update }) {
   const sourceChoices = [['none', '기억이나 생각'], ['book', '책'], ['video', '영상'], ['place', '직접 본 것'], ['other', '그 밖의 곳']]
   return (
     <div className="step-content stamp-step">
-      <div className="step-title"><span>3</span><div><h2>발견 도장을 확인해요</h2><p>무엇을 잘했는지 알려 주는 도장이에요. 점수나 등수는 없어요.</p></div></div>
-      <div className={`mini-card-preview patterned-card pattern-${getBookPattern(book)}`} style={{ '--book-color': book.color }}><img src={draft.artwork} alt="카드 그림 미리보기" /><div><small>No. NEW · {book.name}</small><strong>{draft.name || '새로운 발견'}</strong><p><b>발견 스킬</b>{draft.fact1}</p></div></div>
+      <div className="step-title"><span>3</span><div><h2>발견 도장을 확인해요</h2><p>이번 발견을 어떤 방법으로 남겼는지 보여 주는 도장이에요.</p></div></div>
+      <div className={`mini-card-preview patterned-card pattern-${getBookPattern(book)}`} style={{ '--book-color': book.color }}><img src={draft.artwork} alt="카드 그림 미리보기" /><div><small>새 카드 · {book.name}</small><strong>{draft.name || '새로운 발견'}</strong><p><b>한 줄 발견</b>{draft.fact1}</p></div></div>
       <fieldset className="source-field"><legend>어디에서 알게 되었나요? <span>선택</span></legend><div className="source-choices">{sourceChoices.map(([value, label]) => <button type="button" key={value} className={draft.sourceType === value ? 'selected' : ''} onClick={() => update({ sourceType: value })}>{label}</button>)}</div>{draft.sourceType !== 'none' && <input value={draft.sourceNote} maxLength="80" placeholder="책 제목이나 장소를 써도 좋아요." onChange={(event) => update({ sourceNote: event.target.value })} />}</fieldset>
       <div className="stamp-preview"><h3>이번 카드의 발견 도장</h3><div>{stamps.map((key, index) => <span key={key} style={{ animationDelay: `${index * 90}ms` }}>{STAMP_META[key].icon}<small>{STAMP_META[key].label}</small></span>)}</div></div>
     </div>
@@ -555,7 +555,7 @@ function StampStep({ draft, book, update }) {
 }
 
 function CardDetail({ card, book, onClose, onEdit, onDuplicate, onDownload, onDelete }) {
-  const skills = [card.fact1, card.fact2, card.fact3].filter(Boolean)
+  const facts = [card.fact1, card.fact2, card.fact3].filter(Boolean)
   return (
     <div className="modal-backdrop dark" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
       <section className="modal card-detail" role="dialog" aria-modal="true" aria-label={`${card.name} 카드`} style={{ '--book-color': book.color }}>
@@ -564,7 +564,7 @@ function CardDetail({ card, book, onClose, onEdit, onDuplicate, onDownload, onDe
           <div className="detail-top"><span><i>{book.emoji}</i> {book.name}</span><b>No. {String(card.serial).padStart(3, '0')}</b></div>
           <img className="detail-art" src={card.artwork} alt={`${card.name} 그림`} />
           <h2>{card.name}</h2>
-          <div className="detail-facts"><h3>나의 발견 스킬</h3>{skills.map((fact, index) => <p key={index}><span>{['✦', '◆', '●'][index]}</span><span><small>{index === 0 ? '핵심 발견' : `추가 발견 ${index}`}</small>{fact}</span><b>{Math.min(90, 30 + fact.length * 2)}</b></p>)}{card.confusing && <aside><strong>🔎 비교 탐색</strong>{card.confusing}</aside>}</div>
+          <div className="detail-facts"><h3>내가 발견한 것</h3>{facts.map((fact, index) => <p key={index}><span>{['✦', '◆', '●'][index]}</span><span><small>{index === 0 ? '핵심 발견' : `추가 발견 ${index}`}</small>{fact}</span></p>)}{card.confusing && <aside><strong>🔎 비교해 본 것</strong>{card.confusing}</aside>}</div>
           <div className="detail-stamps">{card.stamps?.map((key) => <span key={key}>{STAMP_META[key]?.icon}<small>{STAMP_META[key]?.label}</small></span>)}</div>
         </div>
         <div className="detail-actions"><button onClick={onEdit}>✏️ 고치기</button><button onClick={onDuplicate}>▣ 복제</button><button onClick={onDownload}>↓ PNG 저장</button><button className="danger-action" onClick={onDelete}>지우기</button></div>
@@ -577,9 +577,9 @@ function Celebration({ card, book, onClose }) {
   return (
     <div className="celebration" role="dialog" aria-modal="true" aria-label="카드 완성">
       <div className="confetti"><i /><i /><i /><i /><i /><i /></div>
-      <p className="eyebrow">NEW DISCOVERY!</p>
+      <p className="eyebrow">새로운 발견</p>
       <h2>새 카드가 도감에 들어갔어요!</h2>
-      <div className="flip-card" style={{ '--book-color': book?.color }}><div className={`patterned-card pattern-${getBookPattern(book)}`}><i className="flip-emblem">{book?.emoji}</i><img src={card.artwork} alt="" /><strong>{card.name}</strong><small>발견 스킬 · {card.fact1}</small><span>No. {String(card.serial).padStart(3, '0')}</span></div></div>
+      <div className="flip-card" style={{ '--book-color': book?.color }}><div className={`patterned-card pattern-${getBookPattern(book)}`}><i className="flip-emblem">{book?.emoji}</i><img src={card.artwork} alt="" /><strong>{card.name}</strong><small>한 줄 발견 · {card.fact1}</small><span>No. {String(card.serial).padStart(3, '0')}</span></div></div>
       <div className="celebration-stamps">{card.stamps?.map((key) => <span key={key}>{STAMP_META[key]?.icon}</span>)}</div>
       <button className="primary-button" onClick={onClose}>내 도감에서 보기</button>
     </div>
