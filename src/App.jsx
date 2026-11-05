@@ -53,6 +53,7 @@ function App() {
   const [selectedCard, setSelectedCard] = useState(null)
   const [celebration, setCelebration] = useState(null)
   const [confirmAction, setConfirmAction] = useState(null)
+  const [openingBook, setOpeningBook] = useState(null)
 
   const refresh = async () => {
     const [nextBooks, nextCards] = await Promise.all([getAll('books'), getAll('cards')])
@@ -80,7 +81,25 @@ function App() {
   const currentBook = books.find((book) => book.id === view.bookId)
   const currentCards = cards.filter((card) => card.bookId === view.bookId)
 
-  const openBook = (book) => setView({ name: 'book', bookId: book.id })
+  useEffect(() => {
+    if (!openingBook) return undefined
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previousOverflow }
+  }, [openingBook])
+
+  const openBook = (book, origin) => {
+    if (openingBook) return
+    setOpeningBook({ book, origin })
+  }
+
+  const completeBookOpening = () => {
+    if (!openingBook) return
+    const bookId = openingBook.book.id
+    setOpeningBook(null)
+    setView({ name: 'book', bookId })
+    window.scrollTo({ top: 0 })
+  }
   const goShelf = () => {
     setSelectedCard(null)
     setView({ name: 'shelf' })
@@ -267,6 +286,47 @@ function App() {
         <Celebration card={celebration} book={books.find((book) => book.id === celebration.bookId)} onClose={() => setCelebration(null)} />
       )}
       {confirmAction && <ConfirmDialog {...confirmAction} onCancel={() => setConfirmAction(null)} />}
+      {openingBook && <BookOpeningTransition {...openingBook} onComplete={completeBookOpening} />}
+    </div>
+  )
+}
+
+function BookCoverFace({ book, count, decorations, className = '' }) {
+  return (
+    <div className={`book-face ${decorations.shimmer ? 'shimmer' : ''} ${className}`}>
+      <div className="book-face-spine" />
+      {book.coverImage ? <img src={book.coverImage} alt="" /> : <span className="book-face-emoji">{book.emoji}</span>}
+      {decorations.ribbon && <span className="cover-ribbon">발견</span>}
+      {decorations.sticker && <span className="cover-sticker">★</span>}
+      <div className="book-face-title"><strong>{book.name}</strong>{count !== '' && <small>{count}장의 카드</small>}</div>
+    </div>
+  )
+}
+
+function BookOpeningTransition({ book, origin, onComplete }) {
+  const style = {
+    '--book-color': book.color,
+    '--travel-x': `${origin.left + origin.width / 2 - window.innerWidth / 2}px`,
+    '--travel-y': `${origin.top + origin.height / 2 - window.innerHeight / 2}px`,
+  }
+
+  return (
+    <div className="book-opening-transition" aria-hidden="true" style={style}>
+      <div
+        className="book-opening-stage"
+        onAnimationEnd={(event) => event.currentTarget === event.target && onComplete()}
+      >
+        <div className="opening-book-model">
+          <div className="opening-book-back" />
+          <div className="opening-book-pages">
+            <div className="opening-page opening-page-left"><span>{book.emoji}</span><small>모아모아</small></div>
+            <div className="opening-page opening-page-right"><strong>{book.name}</strong><i /></div>
+          </div>
+          <div className="opening-book-cover">
+            <BookCoverFace book={book} count="" decorations={{ ribbon: false, sticker: false, shimmer: false }} className="transition-cover-face" />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -287,34 +347,37 @@ function Shelf({ books, cards, onOpen, onCreate }) {
           <div><p className="eyebrow">차곡차곡 모은 도감</p><h2>내 책장</h2></div>
           <span>{books.length}권 · {cards.length}장의 발견</span>
         </div>
-        {books.length ? (
-          <div className="bookshelf">
-            {books.map((book) => {
+        <div className={`bookshelf-frame ${books.length ? '' : 'is-empty'}`}>
+          <div className="bookshelf" aria-label="나의 도감 책꽂이">
+            {books.map((book, index) => {
               const bookCards = cards.filter((card) => card.bookId === book.id)
               const decorations = unlockedDecorations(bookCards.length)
               return (
-                <button className="book-item" key={book.id} onClick={() => onOpen(book)} style={{ '--book-color': book.color }}>
-                  <div className={`book-cover ${decorations.shimmer ? 'shimmer' : ''}`}>
-                    <div className="book-spine" />
-                    {book.coverImage ? <img src={book.coverImage} alt="" /> : <span className="book-emoji">{book.emoji}</span>}
-                    {decorations.ribbon && <span className="cover-ribbon">발견</span>}
-                    {decorations.sticker && <span className="cover-sticker">★</span>}
-                    <div className="book-title"><strong>{book.name}</strong><small>{bookCards.length}장의 카드</small></div>
+                <button
+                  className="book-item"
+                  key={book.id}
+                  aria-label={`${book.name}, 카드 ${bookCards.length}장, 책 펼치기`}
+                  onClick={(event) => onOpen(book, event.currentTarget.querySelector('.shelf-book-spine').getBoundingClientRect())}
+                  style={{ '--book-color': book.color, '--book-height': `${204 + (index % 4) * 10}px` }}
+                >
+                  <div className="shelf-book-stage">
+                    <div className={`shelf-book-spine ${decorations.shimmer ? 'shimmer' : ''}`}>
+                      <span className="spine-emblem">{book.emoji}</span>
+                      <strong>{book.name}</strong>
+                      <small>{bookCards.length}</small>
+                      {decorations.sticker && <i>★</i>}
+                    </div>
+                    <div className="book-preview" aria-hidden="true">
+                      <BookCoverFace book={book} count={bookCards.length} decorations={decorations} />
+                    </div>
                   </div>
-                  <span className="open-hint">책 펼치기 →</span>
                 </button>
               )
             })}
-            <button className="empty-book" onClick={onCreate}><span>＋</span><strong>새로운 관심사</strong><small>새 도감 만들기</small></button>
+            <button className="empty-book" onClick={onCreate} aria-label="새 도감 만들기"><span>＋</span><strong>새 도감</strong><small>만들기</small></button>
+            {!books.length && <div className="shelf-empty-message"><strong>첫 번째 도감을 기다리는 책꽂이</strong><span>좋아하는 것의 이름으로 책 한 권을 만들어 보세요.</span></div>}
           </div>
-        ) : (
-          <div className="empty-shelf">
-            <div className="empty-illustration" aria-hidden="true"><span /><span /><span /></div>
-            <h3>아직 비어 있는 나만의 책장</h3>
-            <p>지금 가장 좋아하는 것의 이름으로 첫 도감을 만들어 보세요.</p>
-            <button className="primary-button" onClick={onCreate}>첫 도감 만들기</button>
-          </div>
-        )}
+        </div>
       </section>
     </main>
   )
