@@ -7,7 +7,25 @@ export const BOOK_COLORS = [
   { name: '보라', value: '#a99cc7' },
 ]
 
-export const BOOK_EMOJIS = ['🦖', '⚽', '🚀', '🐞', '🧱', '🍳', '🐋', '🎨', '🔭', '💡']
+export const BOOK_ICON_OPTIONS = [
+  { value: '🦖', label: '공룡' },
+  { value: '⚽', label: '축구' },
+  { value: '🚀', label: '우주' },
+  { value: '🐞', label: '곤충' },
+  { value: '🧱', label: '건축' },
+  { value: '🍳', label: '요리' },
+  { value: '🐋', label: '바다' },
+  { value: '🎨', label: '미술' },
+  { value: '🔭', label: '관찰' },
+  { value: '💡', label: '아이디어' },
+  { value: 'cover:pikachu', label: '피카추' },
+  { value: 'cover:chiikawa', label: '치이카와' },
+  { value: 'cover:marvel', label: '마블' },
+  { value: '🎬', label: '영화' },
+  { value: '📚', label: '책' },
+]
+
+export const BOOK_EMOJIS = BOOK_ICON_OPTIONS.map((item) => item.value)
 
 export const BOOK_PATTERNS = [
   { id: 'scales', icon: '◉', label: '탐험 비늘', description: '겹겹이 이어지는 힘찬 무늬' },

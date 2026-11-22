@@ -42,6 +42,46 @@ function loadImage(src) {
   })
 }
 
+function drawBookIcon(ctx, value, x, y, size = 36) {
+  ctx.save()
+  ctx.translate(x, y)
+  if (value === 'cover:marvel') {
+    ctx.fillStyle = '#e1282f'
+    rounded(ctx, -2, -size * .42, size * 1.35, size * .82, 4)
+    ctx.fill()
+    ctx.fillStyle = '#fff'
+    ctx.font = `900 ${size * .31}px Arial, sans-serif`
+    ctx.textAlign = 'center'
+    ctx.fillText('MARVEL', size * .65, 1)
+  } else if (value === 'cover:pikachu' || value === 'cover:chiikawa') {
+    const pikachu = value === 'cover:pikachu'
+    ctx.fillStyle = pikachu ? '#f5cd3d' : '#fffdf7'
+    ctx.strokeStyle = pikachu ? '#403629' : '#857b72'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.ellipse(size * .46, 0, size * .38, size * .34, 0, 0, Math.PI * 2)
+    ctx.fill(); ctx.stroke()
+    ctx.beginPath()
+    ctx.moveTo(size * .2, -size * .24); ctx.lineTo(size * .13, -size * .55); ctx.lineTo(size * .34, -size * .31)
+    ctx.moveTo(size * .7, -size * .25); ctx.lineTo(size * .78, -size * .53); ctx.lineTo(size * .59, -size * .31)
+    ctx.fill(); ctx.stroke()
+    ctx.fillStyle = '#403629'
+    ctx.beginPath(); ctx.arc(size * .34, -size * .04, 2.2, 0, Math.PI * 2); ctx.fill()
+    ctx.beginPath(); ctx.arc(size * .58, -size * .04, 2.2, 0, Math.PI * 2); ctx.fill()
+    ctx.strokeStyle = '#403629'; ctx.lineWidth = 1.5
+    ctx.beginPath(); ctx.arc(size * .46, size * .05, size * .08, .15, Math.PI - .15); ctx.stroke()
+    ctx.fillStyle = pikachu ? '#e95b50' : '#efb5b5'
+    ctx.beginPath(); ctx.arc(size * .24, size * .1, size * .07, 0, Math.PI * 2); ctx.fill()
+    ctx.beginPath(); ctx.arc(size * .68, size * .1, size * .07, 0, Math.PI * 2); ctx.fill()
+  } else {
+    ctx.fillStyle = '#303630'
+    ctx.textAlign = 'left'
+    ctx.font = `700 ${size}px ${FONT}`
+    ctx.fillText(value || '💡', 0, 1)
+  }
+  ctx.restore()
+}
+
 function drawPattern(ctx, pattern, accent) {
   ctx.save()
   ctx.globalAlpha = .1
@@ -102,8 +142,7 @@ export async function renderCard(card, book, size = 900) {
   ctx.fill()
   ctx.fillStyle = '#303630'
   ctx.textBaseline = 'middle'
-  ctx.font = `700 30px ${FONT}`
-  ctx.fillText(book?.emoji || '💡', 84, 114)
+  drawBookIcon(ctx, book?.emoji || '💡', 82, 114, 34)
   ctx.font = `650 24px ${FONT}`
   ctx.fillText(book?.name || '나의 도감', 132, 114)
   ctx.textAlign = 'right'

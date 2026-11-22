@@ -215,6 +215,20 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .emoji-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 .emoji-grid button { height: 52px; border: 1px solid var(--line); border-radius: 12px; background: #faf5eb; font-size: 26px; cursor: pointer; }
 .emoji-grid button.selected { border-color: var(--ink); background: #fff0bc; box-shadow: inset 0 0 0 2px var(--ink); }
+.book-icon { display: inline-grid; place-items: center; min-width: 1em; height: 1em; line-height: 1; font-style: normal; vertical-align: middle; }
+.book-icon-pikachu, .book-icon-chiikawa { width: 1em; min-width: 1em; border: .06em solid #554c42; border-radius: 50%; position: relative; background: #f5cf43; color: #40362f; font-family: Arial, sans-serif; box-shadow: inset 0 -.08em 0 rgba(0,0,0,.08); }
+.book-icon-chiikawa { border-color: #8d837a; background: #fffdf7; color: #695f58; }
+.book-icon-pikachu .character-ears, .book-icon-chiikawa .character-ears { position: absolute; inset: -.29em .12em auto; height: .4em; z-index: 0; }
+.book-icon-pikachu .character-ears::before, .book-icon-pikachu .character-ears::after, .book-icon-chiikawa .character-ears::before, .book-icon-chiikawa .character-ears::after { content: ''; position: absolute; width: .22em; height: .48em; border: .05em solid #554c42; border-radius: 70% 70% 35% 35%; background: inherit; transform: rotate(-17deg); }
+.book-icon-pikachu .character-ears::after, .book-icon-chiikawa .character-ears::after { right: 0; transform: rotate(17deg); }
+.book-icon-pikachu .character-ears::before, .book-icon-pikachu .character-ears::after { background: #f5cf43; }
+.book-icon-chiikawa .character-ears::before, .book-icon-chiikawa .character-ears::after { border-color: #8d837a; background: #fffdf7; }
+.book-icon-pikachu .character-face, .book-icon-chiikawa .character-face { position: relative; z-index: 1; font-size: .34em; font-weight: 900; font-style: normal; letter-spacing: -.06em; transform: translateY(.04em); }
+.book-icon-pikachu::before, .book-icon-pikachu::after, .book-icon-chiikawa::before, .book-icon-chiikawa::after { content: ''; position: absolute; top: 58%; width: .15em; height: .11em; border-radius: 50%; background: #ed6258; }
+.book-icon-pikachu::before, .book-icon-chiikawa::before { left: .08em; }
+.book-icon-pikachu::after, .book-icon-chiikawa::after { right: .08em; }
+.book-icon-chiikawa::before, .book-icon-chiikawa::after { background: #efb9bd; }
+.book-icon-marvel { width: 4.8em; min-width: 4.8em; height: 2.45em; padding: 0 .24em; border-radius: .24em; background: #e2272f; color: white; font: 900 .28em/1 Arial, sans-serif; letter-spacing: -.05em; box-shadow: inset 0 0 0 .08em rgba(120,0,0,.3); }
 .pattern-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
 .pattern-choice { min-height: 78px; padding: 10px 11px; display: grid; grid-template-columns: 36px 1fr; grid-template-rows: auto auto; column-gap: 8px; border: 2px solid transparent; border-radius: 13px; background-color: #fbf6eb; background-image: var(--card-pattern); background-size: var(--pattern-size, 34px 34px); color: var(--ink); cursor: pointer; text-align: left; overflow: hidden; }
 .pattern-choice > span { grid-row: 1 / 3; width: 36px; height: 36px; display: grid; place-items: center; align-self: center; border-radius: 50%; background: rgba(255,255,255,.84); font-size: 21px; }

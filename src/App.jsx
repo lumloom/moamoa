@@ -6,6 +6,7 @@ import { get, getAll, migrateLegacyIfNeeded, put, remove, removeBook, replaceLib
 import {
   BOOK_COLORS,
   BOOK_EMOJIS,
+  BOOK_ICON_OPTIONS,
   BOOK_PATTERNS,
   STAMP_META,
   createId,
@@ -38,6 +39,19 @@ const emptyDraft = (bookId) => ({
 
 function Icon({ children }) {
   return <span aria-hidden="true">{children}</span>
+}
+
+function BookIcon({ value, className = '' }) {
+  if (value === 'cover:pikachu') {
+    return <span className={`book-icon book-icon-pikachu ${className}`} role="img" aria-label="피카추"><i className="character-ears" /><i className="character-face">•ᴗ•</i></span>
+  }
+  if (value === 'cover:chiikawa') {
+    return <span className={`book-icon book-icon-chiikawa ${className}`} role="img" aria-label="치이카와"><i className="character-ears" /><i className="character-face">˙ᵕ˙</i></span>
+  }
+  if (value === 'cover:marvel') {
+    return <span className={`book-icon book-icon-marvel ${className}`} role="img" aria-label="마블">MARVEL</span>
+  }
+  return <span className={`book-icon ${className}`} aria-hidden="true">{value || '💡'}</span>
 }
 
 function App() {
@@ -322,7 +336,7 @@ function BookCoverFace({ book, count, decorations, className = '' }) {
   return (
     <div className={`book-face ${decorations.shimmer ? 'shimmer' : ''} ${className}`}>
       <div className="book-face-spine" />
-      {book.coverImage ? <img src={book.coverImage} alt="" /> : <span className="book-face-emoji">{book.emoji}</span>}
+      {book.coverImage ? <img src={book.coverImage} alt="" /> : <span className="book-face-emoji"><BookIcon value={book.emoji} /></span>}
       {decorations.ribbon && <span className="cover-ribbon">발견</span>}
       {decorations.sticker && <span className="cover-sticker">★</span>}
       <div className="book-face-title"><strong>{book.name}</strong>{count !== '' && <small>{count}장의 카드</small>}</div>
@@ -346,7 +360,7 @@ function BookOpeningTransition({ book, origin, onComplete }) {
         <div className="opening-book-model">
           <div className="opening-book-back" />
           <div className="opening-book-pages">
-            <div className="opening-page opening-page-left"><span>{book.emoji}</span><small>모아모아</small></div>
+            <div className="opening-page opening-page-left"><BookIcon value={book.emoji} /><small>모아모아</small></div>
             <div className="opening-page opening-page-right"><strong>{book.name}</strong><i /></div>
           </div>
           <div className="opening-book-cover">
@@ -389,7 +403,7 @@ function Shelf({ books, cards, onOpen, onCreate }) {
                 >
                   <div className="shelf-book-stage">
                     <div className={`shelf-book-spine ${decorations.shimmer ? 'shimmer' : ''}`}>
-                      <span className="spine-emblem">{book.emoji}</span>
+                      <span className="spine-emblem"><BookIcon value={book.emoji} /></span>
                       <strong>{book.name}</strong>
                       <small>{bookCards.length}</small>
                       {decorations.sticker && <i>★</i>}
@@ -417,7 +431,7 @@ function BookView({ book, cards, onBack, onNew, onCard, onEdit, onDownload, down
     <main className="page book-page" style={{ '--book-color': book.color }}>
       <button className="back-button" onClick={onBack}>← 내 책장</button>
       <section className="book-banner">
-        <div className="banner-icon">{book.coverImage ? <img src={book.coverImage} alt="" /> : book.emoji}</div>
+        <div className="banner-icon">{book.coverImage ? <img src={book.coverImage} alt="" /> : <BookIcon value={book.emoji} />}</div>
         <div className="banner-copy">
           <p className="eyebrow">모아모아</p>
           <h1>{book.name}</h1>
@@ -454,7 +468,7 @@ function CardTile({ card, book, onClick }) {
   const pattern = getBookPattern(book)
   return (
     <button className={`card-tile patterned-card pattern-${pattern}`} onClick={onClick} style={{ '--book-color': book.color }}>
-      <div className="card-energy"><span>{book.emoji}</span><b>발견 기록</b><i>{BOOK_PATTERNS.find((item) => item.id === pattern)?.icon}</i></div>
+      <div className="card-energy"><span><BookIcon value={book.emoji} /></span><b>발견 기록</b><i>{BOOK_PATTERNS.find((item) => item.id === pattern)?.icon}</i></div>
       <div className="tile-art"><img src={card.artwork} alt={`${card.name} 그림`} /><span>No. {String(card.serial).padStart(3, '0')}</span></div>
       <div className="tile-copy"><strong>{card.name}</strong><p><small>한 줄 발견</small>{card.fact1}</p></div>
       <div className="tile-stamps">{card.stamps?.slice(0, 3).map((stamp) => <span key={stamp} title={STAMP_META[stamp]?.label}>{STAMP_META[stamp]?.icon}</span>)}</div>
@@ -504,7 +518,7 @@ function BookForm({ initialBook, onClose, onSave, onDelete }) {
         <h2 id="new-book-title">{initialBook ? '도감 이름과 꾸밈 바꾸기' : '어떤 도감을 만들까요?'}</h2>
         <label className="field-label">도감 이름<input autoFocus value={name} maxLength="24" placeholder="예: 공룡 도감" onChange={(event) => { setName(event.target.value); setError('') }} /></label>
         <fieldset><legend>표지 색</legend><div className="choice-row">{BOOK_COLORS.map((item) => <button type="button" key={item.value} className={`cover-color ${color === item.value ? 'selected' : ''}`} style={{ background: item.value }} onClick={() => setColor(item.value)} aria-label={item.name} />)}</div></fieldset>
-        <fieldset><legend>표지 그림</legend><div className="emoji-grid">{BOOK_EMOJIS.map((item) => <button type="button" key={item} className={emoji === item && !coverImage ? 'selected' : ''} onClick={() => { setEmoji(item); setCoverImage('') }}>{item}</button>)}</div></fieldset>
+        <fieldset><legend>표지 그림</legend><div className="emoji-grid">{BOOK_ICON_OPTIONS.map((item) => <button type="button" key={item.value} aria-label={item.label} title={item.label} className={emoji === item.value && !coverImage ? 'selected' : ''} onClick={() => { setEmoji(item.value); setCoverImage('') }}><BookIcon value={item.value} /></button>)}</div></fieldset>
         <fieldset><legend>카드 무늬</legend><div className="pattern-grid" style={{ '--book-color': color }}>{BOOK_PATTERNS.map((item) => <button type="button" key={item.id} className={`pattern-choice pattern-${item.id} ${pattern === item.id ? 'selected' : ''}`} onClick={() => setPattern(item.id)}><span>{item.icon}</span><strong>{item.label}</strong><small>{item.description}</small></button>)}</div></fieldset>
         <label className="soft-button cover-photo">내 그림이나 사진을 표지로 쓰기<input hidden type="file" accept="image/*" onChange={(event) => photo(event.target.files?.[0])} /></label>
         {coverImage && <div className="cover-preview"><img src={coverImage} alt="선택한 표지" /><button onClick={() => setCoverImage('')}>사진 빼기</button></div>}
@@ -652,7 +666,7 @@ function CardDetail({ card, book, onClose, onEdit, onDuplicate, onDownload, onDe
       <section className="modal card-detail" role="dialog" aria-modal="true" aria-label={`${card.name} 카드`} style={{ '--book-color': book.color }}>
         <button className="modal-close light" onClick={onClose} aria-label="닫기">×</button>
         <div className={`detail-card patterned-card pattern-${getBookPattern(book)}`}>
-          <div className="detail-top"><span><i>{book.emoji}</i> {book.name}</span><b>No. {String(card.serial).padStart(3, '0')}</b></div>
+          <div className="detail-top"><span><i><BookIcon value={book.emoji} /></i> {book.name}</span><b>No. {String(card.serial).padStart(3, '0')}</b></div>
           <img className="detail-art" src={card.artwork} alt={`${card.name} 그림`} />
           <h2>{card.name}</h2>
           <div className="detail-facts"><h3>내가 발견한 것</h3>{facts.map((fact, index) => <p key={index}><span>{['✦', '◆', '●'][index]}</span><span><small>{index === 0 ? '핵심 발견' : `추가 발견 ${index}`}</small>{fact}</span></p>)}{card.confusing && <aside><strong>🔎 비교해 본 것</strong>{card.confusing}</aside>}</div>
